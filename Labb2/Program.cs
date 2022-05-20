@@ -119,6 +119,7 @@ namespace Labb2
                         Console.WriteLine("Enter the course you want to see the teaching teachers and students from: ");
                         var userInput1 = Console.ReadLine();
                         GetAllTeachersAndStudentsSpecificCourse(userInput1);
+                        Console.ReadLine();
                         break;
                     case 5:
                         Console.WriteLine("Enter the coursename you want to edit: ");
@@ -145,7 +146,7 @@ namespace Labb2
                                          join course in coursesList on studentSchedule.CourseId equals course.CourseId
                                          join teacher in teachersList on studentSchedule.TeacherId equals teacher.TeacherId
                                          join student in studentsList on studentSchedule.StudentId equals student.StudentId
-                                         where student.StudentName == studentsname
+                                         where student.StudentName.ToLower() == studentsname.ToLower()
                                          select new {courseName = course.CourseName, teacherName = teacher.TeacherName,};
 
                         if(outputlist != null)
@@ -155,9 +156,19 @@ namespace Labb2
                             {
                                 Console.WriteLine(output.courseName + " --- " + output.teacherName);
                             }
-                            Console.WriteLine("Please enter the name of The Course where you want to change " + studentsname +"s Teacher");
-                            var coursename = Console.ReadLine();
-                            EditTeacherForSpecificStudent(studentsname,coursename);
+                            if(outputlist.Count() != 0)
+                            {
+                                Console.WriteLine("Please enter the name of The Course where you want to change " + studentsname + "s Teacher");
+                                var coursename = Console.ReadLine();
+                                EditTeacherForSpecificStudent(studentsname, coursename);
+                            }
+                            else if(outputlist.Count() == 0)
+                            {
+                                Console.WriteLine("This student has no Courses, press enter to continue");
+                                Console.ReadLine();
+                                break;
+                            }
+                           
                         }
                         else if (outputlist == null)
                         {
@@ -292,6 +303,7 @@ namespace Labb2
         }
         static void GetTeacherForSpecificCourse(string inputCourse)
         {
+
             var outputlist = from studentSchedule in studentScheduleList
                              join course in coursesList on studentSchedule.CourseId equals course.CourseId
                              join teacher in teachersList on studentSchedule.TeacherId equals teacher.TeacherId
@@ -300,8 +312,10 @@ namespace Labb2
 
             if(outputlist.Any() == true)
             {
+
                 foreach (var output in outputlist)
                 {
+                    
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\n\tCoursename: " + output.courseName);
                     Console.ForegroundColor = ConsoleColor.Yellow;
